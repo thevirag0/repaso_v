@@ -6,7 +6,7 @@ export interface user{
   email:string,
   password:string
 }
-
+//singleton -- 
 @Injectable({
   providedIn: 'root',
 })
@@ -16,6 +16,8 @@ export class UserService {
   //array de user
   users: user[] = [{id:1, name:"pepe",email:"pepe@gmail.com", password:"1234"}, 
     {id:2, name:"maria",email:"maria@gmail.com", password:"3456"}];
+
+  
   
   //método
   validate(email: string, password: string | undefined): boolean {
