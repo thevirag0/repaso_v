@@ -32,5 +32,8 @@ export class UserService {
     return encontrado;
   }
 
+  returnUsers(): user[]{
+    return this.users;
+  }
 }
 
