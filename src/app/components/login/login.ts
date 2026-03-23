@@ -44,7 +44,7 @@ export class Login {
     }
     this.visible = true;
 }
-show() {
-  this.messageService.add({ severity: 'info', summary: 'Info', detail: this.message() });
-}
+  show() {
+    this.messageService.add({ severity: 'info', summary: 'Info', detail: this.message() });
+  }
 }
