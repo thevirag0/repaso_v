@@ -52,9 +52,29 @@ export class UserService {
   }
 
   add(editUser: User) {
+    for(let i = 0; i < this.users.length; i++){
+      if(this.users[i].email === editUser.email){
+        console.log("email existent")
+        throw new Error("El email introducido ya existe.");
+      }
+    }
+    
     this.users.push(editUser);
   }
 
+  delete(editUser: User){
+    let deleted = false;
+    for(let i = 0; i < this.users.length; i++){
+      if(this.users[i].id === editUser.id){
+        this.users.splice(i, 1);
+        deleted = true;
+        break;
+      }
+    }
+    if(deleted == false){
+      throw new Error("No se encontró el usuario para borrar.")
+    }
+  }
 }
 
 

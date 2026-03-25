@@ -21,11 +21,13 @@ export class UserList implements OnInit {
   users = signal<userService.User[]>([]);
   visible: boolean = false;
   voidUser: userService.User = { id: 0, email: '', name: '', password: '' }
-  editUser = model<userService.User>({...this.voidUser});
+  editUser = model<userService.User>({ ...this.voidUser });
   message = signal<string>('');
-  isAdd: boolean = false;
+  action: string = "";
   isReadonly = signal<boolean>(false);
-  isDeletion : boolean = false;
+  mensajeVisible = model<boolean>(false);
+  errorMessage = signal<string>('');
+  buttonMessage = signal<string>('');
 
   //metodos
   ngOnInit(): void {
@@ -33,38 +35,55 @@ export class UserList implements OnInit {
   }
 
   modificar(userFila: userService.User) {
+    this.action = "MOD";
     this.message.set("Edit an existing user.")
     this.editUser.set(userFila);
-
     this.visible = true;
   }
 
   borrar(userFila: userService.User) {
-    //sacar dialogo con readonly o mensaje de confirmación para confirmar
+    this.action = "DEL";
     this.visible = true;
     this.isReadonly.set(true);
     this.message.set("Confirm deletion.");
     this.editUser.set(userFila);
   }
- 
+
   guardar() {
-    if (this.isAdd) {
-      this.isReadonly.set(false);
-      this.userService.add(this.editUser());
-      this.editUser.set({...this.voidUser});
-    } else {
-      this.isReadonly.set(false);
-      this.visible = false;
+    switch (this.action) {
+      case "MOD":
+        this.visible = false;
+        break;
+      case "ADD":
+        try {
+        this.userService.add(this.editUser());
+        this.visible = false;
+      } catch (e: any) {
+        this.mensajeVisible.set(true);
+        this.errorMessage.set(e.message);
+      }
+        break;
+      case "DEL":
+         try {
+        this.userService.delete(this.editUser());
+        this.visible = false;
+      } catch (e: any) {
+        if (e instanceof Error)
+          this.errorMessage.set(e.message);
+        else
+          this.errorMessage.set(e);
+      }
     }
   }
 
-
   nuevo() {
-    this.isAdd = true;
+    this.action = "ADD";
     this.visible = true;
+    this.isReadonly.set(false);
     this.message.set("Add a new user.")
-    this.editUser.set({...this.voidUser});
-
+    this.editUser.set({ ...this.voidUser });
 
   }
 }
+
+
