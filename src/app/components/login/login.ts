@@ -3,10 +3,11 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
-import { UserService } from '../../services/user/user-service';
+import { User, UserService } from '../../services/user/user-service';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { Message } from 'primeng/message';
 
 
 
@@ -14,7 +15,7 @@ import { MessageService } from 'primeng/api';
   selector: 'app-login',
   standalone: true,
   imports: [
-     FormsModule, ButtonModule, InputTextModule, FloatLabelModule, DialogModule, ToastModule
+    FormsModule, ButtonModule, InputTextModule, FloatLabelModule, DialogModule, ToastModule
   ],
   templateUrl: './login.html',
   styleUrl: './login.css',
@@ -23,28 +24,41 @@ import { MessageService } from 'primeng/api';
 export class Login {
 
   //atributos
-  email=model<string>('');
-  password=model<string>('');
- //variable que queremos que recoja la inyeccion
-  userService=inject(UserService);
+  email = model<string>('');
+  password = model<string>('');
+  //variable que queremos que recoja la inyeccion
+  userService = inject(UserService);
   private messageService = inject(MessageService);
-  message=signal<string>('');
+  message = signal<string>('');
   visible: boolean = false;
-
+  user: User = {} as User;
 
   //metodos
   logIn() {
     //programar validacion
     var validated = this.userService.validate(this.email(), this.password()); //esos parentesis son 
     //como el "get", sino no va a poder coger los datos
-    if(validated){
+    if (validated) {
       this.message.set("Validado");
-    }else{
+    } else {
       this.message.set("Validación incorrecta");
     }
     this.visible = true;
-}
+  }
   show() {
     this.messageService.add({ severity: 'info', summary: 'Info', detail: this.message() });
   }
 }
+
+validate(){
+  var validated = this.userService.validate(this.email(), this.password().subscribe());
+  next: user => {
+    this.user = user
+    if (user) {
+      this.message.set("Estas vaidat")
+      }
+    },
+      error: er => console.log(er.message)
+      this.message.set("Validación incorrecta");
+     
+    }

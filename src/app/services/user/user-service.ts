@@ -1,4 +1,7 @@
-import { Injectable, ModelSignal } from '@angular/core';
+import { HttpBackend } from '@angular/common/http';
+import { inject, Injectable, ModelSignal } from '@angular/core';
+import { RespostaBack } from '../../interfaces/resposta-back';
+import { catchError, catchError, map, Observable } from 'rxjs';
 
 export interface User {
   id: number,
@@ -16,7 +19,7 @@ export class UserService {
   //array de user
   private users: User[] = [{ id: 1, name: "pepe", email: "pepe@gmail.com", password: "1234" },
   { id: 2, name: "maria", email: "maria@gmail.com", password: "3456" }];
-
+  private http=inject(HttpBackend);
   getUsers(): User[] {
     return this.users;
   }
@@ -24,7 +27,15 @@ export class UserService {
   currentUser: User | null = null;
 
   //método
-  validate(email: string, password: string): boolean {
+  validate(email: string, password: string): Observable<User> {
+    //HttpBackend.getUser(email,password);
+    const url = "http://localhost:3001/api/facturator/v1/user/"+email+"/"+password;
+    this.http.get<RespostaBack>(url).pipe(
+      map(res => res.object),
+      catchError(err => {
+        console.log(err.message);
+      })
+    )
     var encontrado = false;
     //recorrer el array para buscar el usuario
     for (let i = 0; i < this.users.length; i++) {
